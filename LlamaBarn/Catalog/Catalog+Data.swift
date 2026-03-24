@@ -188,11 +188,11 @@ extension Catalog {
           ),
           quantizedBuilds: [
             ModelBuild(
-              quantization: "UD-Q4_K_XL",
-              fileSize: 558_772_480,
+              quantization: "Q4_K_M",
+              fileSize: 532_517_120,
               downloadUrl: URL(
                 string:
-                  "https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF/resolve/main/Qwen3.5-0.8B-UD-Q4_K_XL.gguf"
+                  "https://huggingface.co/unsloth/Qwen3.5-0.8B-GGUF/resolve/main/Qwen3.5-0.8B-Q4_K_M.gguf"
               )!
             )
           ]
@@ -218,11 +218,11 @@ extension Catalog {
           ),
           quantizedBuilds: [
             ModelBuild(
-              quantization: "UD-Q4_K_XL",
-              fileSize: 1_339_752_704,
+              quantization: "Q4_K_M",
+              fileSize: 1_280_835_840,
               downloadUrl: URL(
                 string:
-                  "https://huggingface.co/unsloth/Qwen3.5-2B-GGUF/resolve/main/Qwen3.5-2B-UD-Q4_K_XL.gguf"
+                  "https://huggingface.co/unsloth/Qwen3.5-2B-GGUF/resolve/main/Qwen3.5-2B-Q4_K_M.gguf"
               )!
             )
           ]
@@ -248,11 +248,11 @@ extension Catalog {
           ),
           quantizedBuilds: [
             ModelBuild(
-              quantization: "UD-Q4_K_XL",
-              fileSize: 2_912_109_728,
+              quantization: "Q4_K_M",
+              fileSize: 2_740_937_888,
               downloadUrl: URL(
                 string:
-                  "https://huggingface.co/unsloth/Qwen3.5-4B-GGUF/resolve/main/Qwen3.5-4B-UD-Q4_K_XL.gguf"
+                  "https://huggingface.co/unsloth/Qwen3.5-4B-GGUF/resolve/main/Qwen3.5-4B-Q4_K_M.gguf"
               )!
             )
           ]
@@ -278,11 +278,11 @@ extension Catalog {
           ),
           quantizedBuilds: [
             ModelBuild(
-              quantization: "UD-Q4_K_XL",
-              fileSize: 5_966_095_584,
+              quantization: "Q4_K_M",
+              fileSize: 5_680_522_464,
               downloadUrl: URL(
                 string:
-                  "https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-UD-Q4_K_XL.gguf"
+                  "https://huggingface.co/unsloth/Qwen3.5-9B-GGUF/resolve/main/Qwen3.5-9B-Q4_K_M.gguf"
               )!
             )
           ]
@@ -319,11 +319,11 @@ extension Catalog {
           ),
           quantizedBuilds: [
             ModelBuild(
-              quantization: "UD-Q4_K_XL",
-              fileSize: 17_621_125_024,
+              quantization: "Q4_K_M",
+              fileSize: 16_740_812_704,
               downloadUrl: URL(
                 string:
-                  "https://huggingface.co/unsloth/Qwen3.5-27B-GGUF/resolve/main/Qwen3.5-27B-UD-Q4_K_XL.gguf"
+                  "https://huggingface.co/unsloth/Qwen3.5-27B-GGUF/resolve/main/Qwen3.5-27B-Q4_K_M.gguf"
               )!
             )
           ]
@@ -349,11 +349,11 @@ extension Catalog {
           ),
           quantizedBuilds: [
             ModelBuild(
-              quantization: "UD-Q4_K_XL",
-              fileSize: 22_241_950_336,
+              quantization: "Q4_K_M",
+              fileSize: 22_016_023_168,
               downloadUrl: URL(
                 string:
-                  "https://huggingface.co/unsloth/Qwen3.5-35B-A3B-GGUF/resolve/main/Qwen3.5-35B-A3B-UD-Q4_K_XL.gguf"
+                  "https://huggingface.co/unsloth/Qwen3.5-35B-A3B-GGUF/resolve/main/Qwen3.5-35B-A3B-Q4_K_M.gguf"
               )!
             )
           ]
@@ -393,20 +393,20 @@ extension Catalog {
           ),
           quantizedBuilds: [
             ModelBuild(
-              quantization: "UD-Q4_K_XL",
-              fileSize: 68_357_580_224,
+              quantization: "Q4_K_M",
+              fileSize: 76_536_964_608,
               downloadUrl: URL(
                 string:
-                  "https://huggingface.co/unsloth/Qwen3.5-122B-A10B-GGUF/resolve/main/UD-Q4_K_XL/Qwen3.5-122B-A10B-UD-Q4_K_XL-00001-of-00003.gguf"
+                  "https://huggingface.co/unsloth/Qwen3.5-122B-A10B-GGUF/resolve/main/Q4_K_M/Qwen3.5-122B-A10B-Q4_K_M-00001-of-00003.gguf"
               )!,
               additionalParts: [
                 URL(
                   string:
-                    "https://huggingface.co/unsloth/Qwen3.5-122B-A10B-GGUF/resolve/main/UD-Q4_K_XL/Qwen3.5-122B-A10B-UD-Q4_K_XL-00002-of-00003.gguf"
+                    "https://huggingface.co/unsloth/Qwen3.5-122B-A10B-GGUF/resolve/main/Q4_K_M/Qwen3.5-122B-A10B-Q4_K_M-00002-of-00003.gguf"
                 )!,
                 URL(
                   string:
-                    "https://huggingface.co/unsloth/Qwen3.5-122B-A10B-GGUF/resolve/main/UD-Q4_K_XL/Qwen3.5-122B-A10B-UD-Q4_K_XL-00003-of-00003.gguf"
+                    "https://huggingface.co/unsloth/Qwen3.5-122B-A10B-GGUF/resolve/main/Q4_K_M/Qwen3.5-122B-A10B-Q4_K_M-00003-of-00003.gguf"
                 )!,
               ]
             )
@@ -471,32 +471,32 @@ extension Catalog {
           ),
           quantizedBuilds: [
             ModelBuild(
-              quantization: "UD-Q4_K_XL",
-              fileSize: 219_216_328_992,
+              quantization: "Q4_K_M",
+              fileSize: 244_093_630_912,
               downloadUrl: URL(
                 string:
-                  "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF/resolve/main/UD-Q4_K_XL/Qwen3.5-397B-A17B-UD-Q4_K_XL-00001-of-00006.gguf"
+                  "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF/resolve/main/Q4_K_M/Qwen3.5-397B-A17B-Q4_K_M-00001-of-00006.gguf"
               )!,
               additionalParts: [
                 URL(
                   string:
-                    "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF/resolve/main/UD-Q4_K_XL/Qwen3.5-397B-A17B-UD-Q4_K_XL-00002-of-00006.gguf"
+                    "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF/resolve/main/Q4_K_M/Qwen3.5-397B-A17B-Q4_K_M-00002-of-00006.gguf"
                 )!,
                 URL(
                   string:
-                    "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF/resolve/main/UD-Q4_K_XL/Qwen3.5-397B-A17B-UD-Q4_K_XL-00003-of-00006.gguf"
+                    "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF/resolve/main/Q4_K_M/Qwen3.5-397B-A17B-Q4_K_M-00003-of-00006.gguf"
                 )!,
                 URL(
                   string:
-                    "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF/resolve/main/UD-Q4_K_XL/Qwen3.5-397B-A17B-UD-Q4_K_XL-00004-of-00006.gguf"
+                    "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF/resolve/main/Q4_K_M/Qwen3.5-397B-A17B-Q4_K_M-00004-of-00006.gguf"
                 )!,
                 URL(
                   string:
-                    "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF/resolve/main/UD-Q4_K_XL/Qwen3.5-397B-A17B-UD-Q4_K_XL-00005-of-00006.gguf"
+                    "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF/resolve/main/Q4_K_M/Qwen3.5-397B-A17B-Q4_K_M-00005-of-00006.gguf"
                 )!,
                 URL(
                   string:
-                    "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF/resolve/main/UD-Q4_K_XL/Qwen3.5-397B-A17B-UD-Q4_K_XL-00006-of-00006.gguf"
+                    "https://huggingface.co/unsloth/Qwen3.5-397B-A17B-GGUF/resolve/main/Q4_K_M/Qwen3.5-397B-A17B-Q4_K_M-00006-of-00006.gguf"
                 )!,
               ]
             )
