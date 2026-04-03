@@ -14,11 +14,16 @@ LlamaBarn is a macOS menu bar app for running local LLMs.
 
 Install with `brew install --cask llamabarn` or download from [Releases](https://github.com/ggml-org/LlamaBarn/releases).
 
+### Requirements
+
+- macOS 15.0+ (Sequoia or later)
+- `llama-server` installed via Homebrew: `brew install llama.cpp`
+
 ## How it works
 
-LlamaBarn runs a local server at `http://localhost:2276/v1`.
+LlamaBarn runs a local server at `http://localhost:2276/v1` using `llama-server` from your Homebrew installation.
 
-- **Install models** — from the built-in catalog
+- **Install models** — from the built-in catalog or any GGUF in your HF cache
 - **Connect any app** — chat UIs, editors, CLI tools, scripts
 - **Models load when requested** — and unload when idle
 
@@ -27,6 +32,7 @@ LlamaBarn runs a local server at `http://localhost:2276/v1`.
 - **100% local** — Models run on your device; no data leaves your Mac
 - **Small footprint** — `12 MB` native macOS app
 - **Zero configuration** — models are auto-configured with optimal settings for your Mac
+- **Dynamic model discovery** — automatically detects all GGUF models in `~/.cache/huggingface/hub/`, not just catalog entries
 - **Smart model catalog** — shows what fits your Mac, with quantized fallbacks for what doesn't
 - **Self-contained** — all models and config stored in `~/.llamabarn` (configurable)
 - **Built on llama.cpp** — from the GGML org, developed alongside llama.cpp
@@ -76,8 +82,56 @@ defaults write app.llamabarn.LlamaBarn exposeToNetwork -string "100.x.x.x"
 defaults delete app.llamabarn.LlamaBarn exposeToNetwork
 ```
 
+## Development
+
+### Prerequisites
+
+- macOS 15.0+ (Sonoma or later)
+- Xcode 16.0+
+- `llama-server` via Homebrew: `brew install llama.cpp`
+
+### Building
+
+```sh
+git clone https://github.com/ggml-org/LlamaBarn.git
+cd LlamaBarn
+```
+
+#### From Xcode
+
+```sh
+open LlamaBarn.xcodeproj
+```
+
+Select the `LlamaBarn` scheme and build with `Cmd+B`.
+
+#### From command line
+
+```sh
+xcodebuild -project LlamaBarn.xcodeproj \
+  -scheme LlamaBarn \
+  -configuration Debug \
+  CODE_SIGN_IDENTITY="" \
+  CODE_SIGNING_REQUIRED=NO \
+  CODE_SIGNING_ALLOWED=NO \
+  build
+```
+
+#### Install script
+
+```sh
+./install.command
+```
+
+This resolves dependencies, builds Release, and installs to `~/Applications/`.
+
+### Running locally
+
+- Configuration and models are stored in `~/.llamabarn/`
+- The server starts automatically on `http://localhost:2276`
+- Access the built-in WebUI at `http://localhost:2276`
+
 ## Roadmap
 
-- [ ] Support for adding models outside the built-in catalog
 - [ ] Support for loading multiple models at the same time
 - [ ] Support for multiple configurations per model (e.g., multiple context lengths)
