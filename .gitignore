@@ -6,6 +6,7 @@ _*
 !contributing.md
 !LOCAL_DEV.md
 !docs/**
+!install.command
 
 build
 xcuserdata

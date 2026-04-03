@@ -1,5 +1,4 @@
 import AppKit
-import Sparkle
 import SwiftUI
 import os.log
 
@@ -24,11 +23,9 @@ struct LlamaBarnApp: App {
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-  private var updaterController: SPUStandardUpdaterController?
   private let logger = Logger(subsystem: Logging.subsystem, category: "AppDelegate")
   private var menuController: MenuController?
   private var settingsWindowController: SettingsWindowController?
-  private var updatesObserver: NSObjectProtocol?
 
   func applicationDidFinishLaunching(_ notification: Notification) {
     // Enable visual debugging if LB_DEBUG_UI is set
@@ -38,21 +35,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // Configure app as menu bar only (removes from Dock)
     NSApp.setActivationPolicy(.accessory)
-
-    // Set up automatic updates using Sparkle framework
-    // Skip starting the updater for debug builds to avoid false update prompts
-    #if DEBUG
-      let startUpdater = false
-    #else
-      let startUpdater = true
-    #endif
-    updaterController = SPUStandardUpdaterController(
-      startingUpdater: startUpdater,
-      // Capture errors and events for logging/troubleshooting
-      updaterDelegate: self,
-      // Use our custom UI handling for gentle reminders
-      userDriverDelegate: self
-    )
 
     // Initialize the shared model library manager to scan for existing models
     _ = ModelManager.shared
@@ -65,13 +47,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // Start the server in Router Mode
     LlamaServer.shared.start()
-
-    // Listen for explicit update requests from the menu controller
-    updatesObserver = NotificationCenter.default.addObserver(
-      forName: .LBCheckForUpdates, object: nil, queue: .main
-    ) { [weak self] _ in
-      self?.updaterController?.checkForUpdates(nil)
-    }
 
     #if DEBUG
       // Auto-open menu in debug builds to save a click
@@ -88,43 +63,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // Gracefully stop the llama-server process when app quits
     LlamaServer.shared.stop()
-
-    // Clean up observers
-    if let updatesObserver { NotificationCenter.default.removeObserver(updatesObserver) }
-  }
-}
-
-// MARK: - SPUStandardUserDriverDelegate
-
-extension AppDelegate: SPUStandardUserDriverDelegate {
-  // Tells Sparkle this app supports gentle reminders for background update checks.
-  // This prevents intrusive modal dialogs and allows us to show dock badges instead.
-  var supportsGentleScheduledUpdateReminders: Bool {
-    true
-  }
-
-  // Called when Sparkle is about to show an update dialog.
-  // We use this to switch from menu bar mode to dock app mode so the dialog appears properly.
-  func standardUserDriverWillHandleShowingUpdate(
-    _ handleShowingUpdate: Bool, forUpdate update: SUAppcastItem, state: SPUUserUpdateState
-  ) {
-    // Always show in dock when update dialog will appear
-    NSApp.setActivationPolicy(.regular)
-  }
-
-  // Called when the update process is completely finished (installed, skipped, or dismissed).
-  // We use this to return the app to menu bar mode.
-  func standardUserDriverWillFinishUpdateSession() {
-    // Return to menu bar mode
-    NSApp.setActivationPolicy(.accessory)
-  }
-}
-
-// MARK: - SPUUpdaterDelegate
-
-extension AppDelegate: SPUUpdaterDelegate {
-  func updater(_ updater: SPUUpdater, didFailToCheckForUpdatesWithError error: Error) {
-    logger.error(
-      "Sparkle: failed to check for updates: \(error.localizedDescription, privacy: .public)")
   }
 }

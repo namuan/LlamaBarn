@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		156891D32E268C5F00F71BD4 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 156891D22E268C5F00F71BD4 /* Sparkle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -95,7 +94,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				156891D32E268C5F00F71BD4 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,7 +139,6 @@
 			);
 			name = LlamaBarn;
 			packageProductDependencies = (
-				156891D22E268C5F00F71BD4 /* Sparkle */,
 			);
 			productName = LlamaBarn;
 			productReference = 1568919C2E2685F700F71BD4 /* LlamaBarn.app */;
@@ -172,7 +169,6 @@
 			mainGroup = 156891932E2685F700F71BD4;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				156891D12E268C5F00F71BD4 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1568919D2E2685F700F71BD4 /* Products */;
@@ -417,22 +413,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		156891D12E268C5F00F71BD4 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sparkle-project/Sparkle";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.7.1;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		156891D22E268C5F00F71BD4 /* Sparkle */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 156891D12E268C5F00F71BD4 /* XCRemoteSwiftPackageReference "Sparkle" */;
-			productName = Sparkle;
-		};
 /* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 156891942E2685F700F71BD4 /* Project object */;
