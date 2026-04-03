@@ -5,6 +5,7 @@ _*
 !readme.md
 !contributing.md
 !LOCAL_DEV.md
+!docs/**
 
 build
 xcuserdata

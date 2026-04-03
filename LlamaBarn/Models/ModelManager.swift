@@ -15,6 +15,10 @@ class ModelManager: NSObject, URLSessionDownloadDelegate {
 
   var downloadedModels: [CatalogEntry] = []
 
+  /// Dynamically discovered models from HF cache (not in hardcoded catalog).
+  /// These are GGUF files found during cache scanning that don't match catalog entries.
+  var dynamicModels: [CatalogEntry] = []
+
   /// Resolved file paths for each downloaded model, keyed by model ID.
   /// Populated during refreshDownloadedModels(). Used for models.ini generation,
   /// deletion, and determining which files need downloading.
@@ -23,7 +27,7 @@ class ModelManager: NSObject, URLSessionDownloadDelegate {
   /// Returns a sorted list of all models that are either installed or currently downloading.
   /// This is the primary list shown in the "Installed" section of the menu.
   var managedModels: [CatalogEntry] {
-    (downloadedModels + downloadingModels).sorted(by: CatalogEntry.displayOrder(_:_:))
+    (downloadedModels + dynamicModels + downloadingModels).sorted(by: CatalogEntry.displayOrder(_:_:))
   }
 
   var downloadingModels: [CatalogEntry] {
@@ -267,7 +271,7 @@ class ModelManager: NSObject, URLSessionDownloadDelegate {
   private func generateModelsFileContent() -> String {
     var content = ""
 
-    for model in downloadedModels {
+    for model in downloadedModels + dynamicModels {
       // Use the effective tier (user selection or max compatible)
       guard let tier = model.effectiveCtxTier else { continue }
 
@@ -383,26 +387,27 @@ class ModelManager: NSObject, URLSessionDownloadDelegate {
       }
 
       // 2. Scan HF cache directory — overwrites legacy entries (HF cache is canonical)
-      let hfResults = HFCache.scanForModels(cacheDir: hfCacheDir, catalog: allCatalogModels)
-      for (modelId, paths) in hfResults {
+      let (hfResolved, hfDynamicEntries) = HFCache.scanForModels(cacheDir: hfCacheDir, catalog: allCatalogModels)
+      for (modelId, paths) in hfResolved {
         allResolved[modelId] = paths
       }
 
       // 3. Build downloaded models list from resolved paths
       let finalResolved = allResolved
-      let downloaded = allCatalogModels.filter { finalResolved[$0.id] != nil }
+      let catalogDownloaded = allCatalogModels.filter { finalResolved[$0.id] != nil }
 
       await MainActor.run {
-        Self.updateDownloadedModels(downloaded, resolved: finalResolved)
+        Self.updateDownloadedModels(catalog: catalogDownloaded, dynamic: hfDynamicEntries, resolved: finalResolved)
       }
     }
   }
 
   private static func updateDownloadedModels(
-    _ models: [CatalogEntry], resolved: [String: ResolvedPaths]
+    catalog: [CatalogEntry], dynamic: [CatalogEntry], resolved: [String: ResolvedPaths]
   ) {
     let manager = ModelManager.shared
-    manager.downloadedModels = models.sorted(by: CatalogEntry.displayOrder(_:_:))
+    manager.downloadedModels = catalog.sorted(by: CatalogEntry.displayOrder(_:_:))
+    manager.dynamicModels = dynamic.sorted(by: CatalogEntry.displayOrder(_:_:))
     manager.resolvedPaths = resolved
 
     // Only reload server if models.ini actually changed

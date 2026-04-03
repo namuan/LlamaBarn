@@ -268,18 +268,14 @@ enum HFCache {
 
   // MARK: - Scanning
 
-  /// Scans the HF cache for models matching catalog entries.
-  /// Returns a dict mapping model ID → ResolvedPaths.
-  ///
-  /// For each catalog entry, we:
-  /// 1. Derive the expected repo dir name from the download URL
-  /// 2. Look for matching files in any snapshot directory (not a specific commit)
-  /// 3. Check all required files exist (main + shards + mmproj)
+  /// Scans the HF cache for models matching catalog entries AND discovers unrecognized GGUF files.
+  /// Returns (catalog-matched entries, dynamically discovered GGUF entries).
   static func scanForModels(
     cacheDir: URL, catalog: [CatalogEntry]
-  ) -> [String: ResolvedPaths] {
+  ) -> ([String: ResolvedPaths], [CatalogEntry]) {
     let fm = FileManager.default
     var result: [String: ResolvedPaths] = [:]
+    var dynamicEntries: [CatalogEntry] = []
 
     // Group catalog entries by repo dir for efficient scanning
     var entriesByRepo: [String: [CatalogEntry]] = [:]
@@ -290,13 +286,13 @@ enum HFCache {
 
     // Enumerate repo directories in the cache
     guard let repoDirs = try? fm.contentsOfDirectory(atPath: cacheDir.path) else {
-      return result
+      return (result, dynamicEntries)
     }
 
     for repoDir in repoDirs {
-      guard repoDir.hasPrefix("models--"),
-        let entries = entriesByRepo[repoDir]
-      else { continue }
+      guard repoDir.hasPrefix("models--") else { continue }
+
+      let knownEntries = entriesByRepo[repoDir]
 
       let snapshotsDir =
         cacheDir
@@ -316,44 +312,100 @@ enum HFCache {
         let fileSet = Set(files)
 
         // Check each catalog entry against this snapshot's files
-        for entry in entries {
-          // Skip if we already found this model in a different snapshot
-          guard result[entry.id] == nil else { continue }
+        if let entries = knownEntries {
+          for entry in entries {
+            // Skip if we already found this model in a different snapshot
+            guard result[entry.id] == nil else { continue }
 
-          let mainFile = entry.downloadUrl.lastPathComponent
-          guard fileSet.contains(mainFile) else { continue }
+            let mainFile = entry.downloadUrl.lastPathComponent
+            guard fileSet.contains(mainFile) else { continue }
 
-          // Check additional parts (shards)
-          var partsFound = true
-          var partPaths: [String] = []
-          if let additionalParts = entry.additionalParts {
-            for part in additionalParts {
-              let partFile = part.lastPathComponent
-              if fileSet.contains(partFile) {
-                partPaths.append(snapshotDir.appendingPathComponent(partFile).path)
-              } else {
-                partsFound = false
-                break
+            // Check additional parts (shards)
+            var partsFound = true
+            var partPaths: [String] = []
+            if let additionalParts = entry.additionalParts {
+              for part in additionalParts {
+                let partFile = part.lastPathComponent
+                if fileSet.contains(partFile) {
+                  partPaths.append(snapshotDir.appendingPathComponent(partFile).path)
+                } else {
+                  partsFound = false
+                  break
+                }
               }
             }
-          }
-          guard partsFound else { continue }
+            guard partsFound else { continue }
 
-          // Check mmproj file — in HF cache we use the original remote filename
-          // (no mmprojLocalFilename override needed since each repo has its own dir)
-          var mmprojPath: String?
-          if let mmprojUrl = entry.mmprojUrl {
-            let mmprojFile = mmprojUrl.lastPathComponent
-            if fileSet.contains(mmprojFile) {
-              mmprojPath = snapshotDir.appendingPathComponent(mmprojFile).path
-            } else {
-              continue  // mmproj required but not found
+            // Check mmproj file — in HF cache we use the original remote filename
+            var mmprojPath: String?
+            if let mmprojUrl = entry.mmprojUrl {
+              let mmprojFile = mmprojUrl.lastPathComponent
+              if fileSet.contains(mmprojFile) {
+                mmprojPath = snapshotDir.appendingPathComponent(mmprojFile).path
+              } else {
+                continue  // mmproj required but not found
+              }
             }
+
+            result[entry.id] = ResolvedPaths(
+              modelFile: snapshotDir.appendingPathComponent(mainFile).path,
+              additionalParts: partPaths,
+              mmprojFile: mmprojPath,
+              isLegacy: false
+            )
+          }
+        }
+
+        // Scan for unrecognized GGUF files not in catalog
+        // Exclude mmproj files (vision projection files, not models)
+        let ggufFiles = files.filter { f in
+          f.lowercased().hasSuffix(".gguf") && !f.lowercased().hasPrefix("mmproj")
+        }
+        guard !ggufFiles.isEmpty else { continue }
+
+        // Avoid duplicate dynamic entries from multiple snapshots
+        let existingDynamicIds = Set(dynamicEntries.map { $0.id })
+
+        for ggufFile in ggufFiles {
+          let filePath = snapshotDir.appendingPathComponent(ggufFile).path
+          if result.values.contains(where: { $0.modelFile == filePath }) { continue }
+
+          guard let metadata = try? GGUFParser.parseHeader(at: filePath) else {
+            Self.logger.warning("Failed to parse GGUF header: \(ggufFile)")
+            continue
           }
 
-          result[entry.id] = ResolvedPaths(
-            modelFile: snapshotDir.appendingPathComponent(mainFile).path,
-            additionalParts: partPaths,
+          // Use filename stem (without .gguf) as the model ID
+          let fileNameStem = String(ggufFile.dropLast(5))
+          let dynamicId = fileNameStem
+          guard !existingDynamicIds.contains(dynamicId) else { continue }
+
+          // Check for mmproj in same directory
+          let mmprojFile = ggufFiles.first { $0.lowercased().hasPrefix("mmproj") && $0 != ggufFile }
+          let mmprojPath = mmprojFile.map { snapshotDir.appendingPathComponent($0).path }
+
+          let dynamicEntry = CatalogEntry(
+            id: dynamicId,
+            family: metadata.architecture?.capitalized ?? "GGUF",
+            parameterCount: Int64(metadata.parameterCount ?? 0),
+            size: fileNameStem,
+            ctxWindow: Int(metadata.contextLength ?? 8192),
+            fileSize: Int64(metadata.fileSize),
+            ctxBytesPer1kTokens: metadata.ctxBytesPer1kTokensEstimate,
+            overheadMultiplier: 1.1,
+            downloadUrl: URL(fileURLWithPath: filePath),
+            additionalParts: nil,
+            mmprojUrl: mmprojPath.map { URL(fileURLWithPath: $0) },
+            serverArgs: [],
+            icon: "default_model",
+            quantization: metadata.quantizationLabel,
+            isFullPrecision: metadata.fileType == 0 || metadata.fileType == 1
+          )
+
+          dynamicEntries.append(dynamicEntry)
+          result[dynamicId] = ResolvedPaths(
+            modelFile: filePath,
+            additionalParts: [],
             mmprojFile: mmprojPath,
             isLegacy: false
           )
@@ -361,7 +413,7 @@ enum HFCache {
       }
     }
 
-    return result
+    return (result, dynamicEntries)
   }
 }
 
