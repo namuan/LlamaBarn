@@ -73,7 +73,7 @@ class LlamaServer {
   private var settingsObserver: NSObjectProtocol?
 
   init() {
-    libFolderPath = Bundle.main.bundlePath + "/Contents/MacOS/llama-cpp"
+    libFolderPath = "/opt/homebrew/bin"
 
     // Listen for settings changes to reload server if needed (e.g. sleep timer)
     settingsObserver = NotificationCenter.default.addObserver(
