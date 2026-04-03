@@ -1,5 +1,4 @@
 import AppKit
-import Sentry
 import Sparkle
 import SwiftUI
 import os.log
@@ -34,37 +33,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   func applicationDidFinishLaunching(_ notification: Notification) {
     // Enable visual debugging if LB_DEBUG_UI is set
     NSView.swizzleDebugBehavior()
-
-    // Initialize Sentry for error reporting (release builds only)
-    #if !DEBUG
-      SentrySDK.start { options in
-        options.dsn =
-          "https://9a490c1c8715f73a0db5f65890165602@o509420.ingest.us.sentry.io/4510221602914304"
-        options.debug = false
-        options.releaseName = AppInfo.shortVersion
-        options.environment = AppInfo.shortVersion == "0.0.0" ? "internal" : "production"
-
-        // Only track HTTP errors from external services (like Hugging Face), not localhost.
-        // llama-server health checks return expected 503 responses during model loading.
-        options.failedRequestTargets = ["huggingface.co"]
-
-        // Filter out non-actionable network errors globally so they don't use up quota
-        options.beforeSend = { event in
-          // Check if this is a network error we want to ignore
-          if let error = event.error as NSError? {
-            let ignoredCodes = [
-              NSURLErrorCancelled,
-              NSURLErrorNotConnectedToInternet,
-              NSURLErrorNetworkConnectionLost,
-            ]
-            if error.domain == NSURLErrorDomain && ignoredCodes.contains(error.code) {
-              return nil  // Drop this event
-            }
-          }
-          return event
-        }
-      }
-    #endif
 
     logger.info("LlamaBarn starting up")
 

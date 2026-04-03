@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		154EE9712EA64E200083FDEE /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 154EE9702EA64E200083FDEE /* Sentry */; };
 		156891D32E268C5F00F71BD4 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 156891D22E268C5F00F71BD4 /* Sparkle */; };
 /* End PBXBuildFile section */
 
@@ -97,7 +96,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				156891D32E268C5F00F71BD4 /* Sparkle in Frameworks */,
-				154EE9712EA64E200083FDEE /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,7 +142,6 @@
 			name = LlamaBarn;
 			packageProductDependencies = (
 				156891D22E268C5F00F71BD4 /* Sparkle */,
-				154EE9702EA64E200083FDEE /* Sentry */,
 			);
 			productName = LlamaBarn;
 			productReference = 1568919C2E2685F700F71BD4 /* LlamaBarn.app */;
@@ -176,7 +173,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				156891D12E268C5F00F71BD4 /* XCRemoteSwiftPackageReference "Sparkle" */,
-				154EE96F2EA64E200083FDEE /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1568919D2E2685F700F71BD4 /* Products */;
@@ -421,14 +417,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		154EE96F2EA64E200083FDEE /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/getsentry/sentry-cocoa.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.57.0;
-			};
-		};
 		156891D12E268C5F00F71BD4 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle";
@@ -440,11 +428,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		154EE9702EA64E200083FDEE /* Sentry */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 154EE96F2EA64E200083FDEE /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
-			productName = Sentry;
-		};
 		156891D22E268C5F00F71BD4 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 156891D12E268C5F00F71BD4 /* XCRemoteSwiftPackageReference "Sparkle" */;
