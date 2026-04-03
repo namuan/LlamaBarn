@@ -26,6 +26,7 @@ enum UserSettings {
     static let modelStorageDirectory = "modelStorageDirectory"  // legacy, kept for backward compat
     static let hfCacheDirectory = "hfCacheDirectory"
     static let hfToken = "hfToken"
+    static let llamaServerPath = "llamaServerPath"
   }
 
   private static let defaults = UserDefaults.standard
@@ -153,6 +154,33 @@ enum UserSettings {
   static var hasCustomHFCacheDirectory: Bool {
     defaults.string(forKey: Keys.hfCacheDirectory) != nil
   }
+
+  // MARK: - llama-server Path
+
+  /// Path to the llama-server binary.
+  /// Defaults to Homebrew's location on Apple Silicon.
+  static var llamaServerPath: String {
+    get {
+      if let path = defaults.string(forKey: Keys.llamaServerPath), !path.isEmpty {
+        return path
+      }
+      return "/opt/homebrew/bin/llama-server"
+    }
+    set {
+      if newValue.isEmpty || newValue == "/opt/homebrew/bin/llama-server" {
+        defaults.removeObject(forKey: Keys.llamaServerPath)
+      } else {
+        defaults.set(newValue, forKey: Keys.llamaServerPath)
+      }
+    }
+  }
+
+  /// Whether a custom llama-server path is configured
+  static var hasCustomLlamaServerPath: Bool {
+    defaults.string(forKey: Keys.llamaServerPath) != nil
+  }
+
+  static let defaultLlamaServerPath = "/opt/homebrew/bin/llama-server"
 
   // MARK: - Hugging Face Token
 

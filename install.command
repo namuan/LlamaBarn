@@ -30,6 +30,7 @@ echo "Building $APP_NAME (Release)..."
 xcodebuild -project "$PROJECT" \
   -scheme "$APP_NAME" \
   -configuration Release \
+  -destination "platform=macOS,arch=arm64" \
   CODE_SIGN_IDENTITY="" \
   CODE_SIGNING_REQUIRED=NO \
   CODE_SIGNING_ALLOWED=NO \

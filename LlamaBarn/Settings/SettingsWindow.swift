@@ -65,6 +65,7 @@ struct SettingsView: View {
   @State private var launchAtLogin = LaunchAtLogin.isEnabled
   @State private var sleepIdleTime = UserSettings.sleepIdleTime
   @State private var hfCacheDir = UserSettings.hfCacheDirectory
+  @State private var llamaServerPath = UserSettings.llamaServerPath
   @State private var hfToken = UserSettings.hfToken ?? ""
   @State private var showingHFTokenSheet = false
 
@@ -151,6 +152,51 @@ struct SettingsView: View {
             .foregroundStyle(.secondary)
         }
       }
+
+      // llama-server path section
+      Section {
+        VStack(alignment: .leading, spacing: 8) {
+          HStack(spacing: 6) {
+            Text("llama-server")
+              .fixedSize()
+
+            Spacer()
+
+            Text(abbreviatedPath(URL(fileURLWithPath: llamaServerPath)))
+              .font(.callout)
+              .foregroundStyle(.secondary)
+              .textSelection(.enabled)
+              .lineLimit(1)
+              .truncationMode(.middle)
+              .layoutPriority(-1)
+
+            if UserSettings.hasCustomLlamaServerPath {
+              Button {
+                UserSettings.llamaServerPath = UserSettings.defaultLlamaServerPath
+                llamaServerPath = UserSettings.llamaServerPath
+                LlamaServer.shared.reload()
+              } label: {
+                Text("↺")
+              }
+              .font(.callout)
+              .controlSize(.small)
+              .help("Restore default path")
+              .fixedSize()
+            }
+
+            Button("Select...") {
+              chooseLlamaServerPath()
+            }
+            .font(.callout)
+            .controlSize(.small)
+            .fixedSize()
+          }
+
+          Text("Path to the llama-server binary.")
+            .font(.callout)
+            .foregroundStyle(.secondary)
+        }
+      }
       // Optional HF access token section
       Section {
         VStack(alignment: .leading, spacing: 8) {
@@ -204,6 +250,26 @@ struct SettingsView: View {
       UserSettings.hfCacheDirectory = url
       hfCacheDir = url
       ModelManager.shared.refreshDownloadedModels()
+    }
+  }
+
+  /// Opens a file picker and updates the llama-server binary path
+  private func chooseLlamaServerPath() {
+    let panel = NSOpenPanel()
+    panel.canChooseFiles = true
+    panel.canChooseDirectories = false
+    panel.canCreateDirectories = false
+    panel.allowsMultipleSelection = false
+    panel.message = "Choose the llama-server binary"
+    panel.prompt = "Select"
+
+    // Start in /opt/homebrew/bin
+    panel.directoryURL = URL(fileURLWithPath: "/opt/homebrew/bin")
+
+    if panel.runModal() == .OK, let url = panel.url {
+      UserSettings.llamaServerPath = url.path
+      llamaServerPath = url.path
+      LlamaServer.shared.reload()
     }
   }
 

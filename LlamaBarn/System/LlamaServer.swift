@@ -73,7 +73,7 @@ class LlamaServer {
   private var settingsObserver: NSObjectProtocol?
 
   init() {
-    libFolderPath = "/opt/homebrew/bin"
+    libFolderPath = URL(fileURLWithPath: UserSettings.llamaServerPath).deletingLastPathComponent().path
 
     // Listen for settings changes to reload server if needed (e.g. sleep timer)
     settingsObserver = NotificationCenter.default.addObserver(
@@ -94,7 +94,7 @@ class LlamaServer {
 
   /// Basic validation of required paths
   private func validatePaths() throws {
-    let llamaServerPath = libFolderPath + "/llama-server"
+    let llamaServerPath = UserSettings.llamaServerPath
     guard FileManager.default.fileExists(atPath: llamaServerPath) else {
       logger.error("llama-server binary not found: \(llamaServerPath)")
       throw LlamaServerError.invalidPath(llamaServerPath)
@@ -151,7 +151,7 @@ class LlamaServer {
 
     let presetsPath = CatalogEntry.legacyStorageDir.appendingPathComponent("models.ini").path
 
-    let llamaServerPath = libFolderPath + "/llama-server"
+    let llamaServerPath = UserSettings.llamaServerPath
 
     // Empty dir to suppress router mode's automatic model discovery from cache.
     // Without this, llama-server scans the HF cache and lists every GGUF it finds.
