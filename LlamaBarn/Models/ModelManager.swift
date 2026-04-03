@@ -1,5 +1,4 @@
 import Foundation
-import Sentry
 import os.log
 
 /// Represents the current status of a model
@@ -474,8 +473,6 @@ class ModelManager: NSObject, URLSessionDownloadDelegate {
           "url": downloadTask.originalRequest?.url?.absoluteString ?? "unknown",
         ]
       )
-      SentrySDK.capture(error: error)
-
       handleDownloadFailure(
         modelId: modelId,
         model: model,
@@ -662,10 +659,6 @@ class ModelManager: NSObject, URLSessionDownloadDelegate {
       if nsError.code == NSURLErrorCancelled {
         return
       }
-
-      // We capture all other errors to Sentry; the SDK configuration in LlamaBarnApp
-      // filters out common noise (e.g. offline, connection lost) globally.
-      SentrySDK.capture(error: error)
 
       let resumeData = nsError.userInfo[NSURLSessionDownloadTaskResumeData] as? Data
       let originalURL = task.originalRequest?.url
